@@ -1,5 +1,4 @@
 set(sources
-	src/batch.cpp
 	src/batch_server.cpp
 	src/server.cpp
 )
