@@ -1,5 +1,2 @@
-#add_subdirectory(clients/algorithms)
 add_subdirectory(clients/streams)
-add_subdirectory(clients/tools)
 add_subdirectory(server)
-#add_subdirectory(tests)
