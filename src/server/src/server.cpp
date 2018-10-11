@@ -72,52 +72,6 @@ int main(int argc, char *argv[])
   int opt = 0;
   while(-1 != (opt = getopt(argc, argv, "?h"))) {
     switch(opt) {
-  /*    case 'C': {
-        strcpy(stinger_config_file,optarg);
-      		} break;
-
-      case 'a': {
-		  port_algs = atoi(optarg);
-		} break;
-      case 's': {
-		  port_streams = atoi(optarg);
-		} break;
-
-      case 'n': {
-		  strcpy (graph_name, optarg);
-		} break;
-      
-      case 'k': {
-		  server_state.set_write_alg_data(true);
-		} break;
-
-      case 'v': {
-		  server_state.set_write_names(true);
-		} break;
-
-      case 'c': {
-		  server_state.set_history_cap(atol(optarg));
-		} break;
-
-      case 'f': {
-		  server_state.set_out_dir(optarg);
-		} break;
-
-      case 'i': {
-		  strcpy (input_file, optarg);
-		} break;
-      
-      case 't': {
-		  strcpy (file_type, optarg);
-		} break;
-
-      case '1': {
-		  use_numerics = 1;
-		} break;
-      case 'd': {
-		  unleash_daemon = 1;
-		} break;*/
-
       case '?':
       case 'h': {
 		  printf("Usage:    %s\n"
@@ -144,98 +98,6 @@ int main(int argc, char *argv[])
 
   libconfig::Config cfg;
 
-  /*if (stinger_config_file[0] != '\0') { 
-    // Used for configuring STINGER
-
-    try {
-      cfg.readFile(stinger_config_file);
-    } catch (libconfig::ParseException e) {
-      const char * error_msg = e.getError();
-      LOG_E_A("Error Parsing STINGER Config File (%s):\n%s",stinger_config_file,error_msg);
-      exit(-1);
-    } catch (libconfig::FileIOException e) {
-      LOG_E_A("Error Opening STINGER Config File (%s)",stinger_config_file);
-      exit(-1);
-    } catch (libconfig::SettingException e) {
-      LOG_E_A("Unknown Error with STINGER Config File (%s)",stinger_config_file);
-      exit(-1);
-    }
-
-    long long nv_cfg;
-    long long edge_factor_cfg;
-    int netypes_cfg;
-    int nvtypes_cfg;
-    bool map_none_etype_cfg, map_none_vtype_cfg;
-    bool no_resize_cfg;
-    const char * memory_size_cfg;
-
-    if (cfg.lookupValue("num_vertices", nv_cfg)) {
-      LOG_D_A("num_vertices: %ld",nv_cfg);
-      stinger_config->nv = nv_cfg;
-    }
-    if (cfg.lookupValue("edges_per_type", edge_factor_cfg)) {
-      LOG_D_A("edges_per_type: %ld",edge_factor_cfg);
-      stinger_config->nebs = ceil((double)edge_factor_cfg / STINGER_EDGEBLOCKSIZE);
-      if (stinger_config->nebs < stinger_config->nv) {
-        stinger_config->nebs = stinger_config->nv;
-      }
-    }
-    if (cfg.lookupValue("num_edge_types", netypes_cfg)) {
-      LOG_D_A("num_edge_types: %ld",netypes_cfg);
-      stinger_config->netypes = netypes_cfg;
-    }
-    if (cfg.lookupValue("num_vertex_types", nvtypes_cfg)) {
-      LOG_D_A("num_vertex_types: %ld",nvtypes_cfg);
-      stinger_config->nvtypes = nvtypes_cfg;
-    }
-    if (cfg.exists("edge_type_names")) {
-      LOG_D("edge_type_names exists");
-      stinger_config->no_map_none_etype = true;
-    }
-    if (cfg.lookupValue("map_none_etype", map_none_etype_cfg)) {
-      LOG_D_A("map_none_etype: %ld",map_none_etype_cfg);
-      stinger_config->no_map_none_etype = !map_none_etype_cfg;
-    }
-    if (cfg.exists("vertex_type_names")) {
-      LOG_D("vertex_type_names exists");
-      stinger_config->no_map_none_vtype = true;
-    }
-    if (cfg.lookupValue("map_none_vtype", map_none_vtype_cfg)) {
-      LOG_D_A("map_none_vtype: %ld",map_none_vtype_cfg);
-      stinger_config->no_map_none_vtype = !map_none_vtype_cfg;
-    }
-    if (cfg.lookupValue("max_memsize", memory_size_cfg)) {  
-        LOG_D_A("max_memsize: %s",memory_size_cfg);  
-        char *tailptr = NULL;
-        unsigned long mx;
-        errno = 0;
-        mx = strtoul (memory_size_cfg, &tailptr, 10);
-        if (ULONG_MAX != mx && errno == 0) {
-          if (tailptr)
-            switch (*tailptr) {
-            case 't':
-            case 'T':
-              mx <<= 10;
-            case 'g':
-            case 'G':
-              mx <<= 10;
-            case 'm':
-            case 'M':
-              mx <<= 10;
-            case 'k':
-            case 'K':
-              mx <<= 10;
-              break;
-            }
-        }
-        stinger_config->memory_size = mx;
-    }
-    if (cfg.lookupValue("no_resize", no_resize_cfg)) {
-      LOG_D_A("no_resize: %ld",no_resize_cfg);
-      stinger_config->no_resize = no_resize_cfg;
-    }
-  }*/
-
   /* print configuration to the terminal */
   LOG_I_A("Name: %s", graph_name);
 #ifdef __APPLE__
@@ -244,86 +106,12 @@ int main(int argc, char *argv[])
   master_tid = syscall(SYS_gettid);
 #endif
 
-  /* If being a "daemon" (after a fashion), wait on the child to finish initializing and then exit. */
-  /*if (unleash_daemon) {
-    pid_t pid;
-    if (pipe (start_pipe)) {
-      perror ("pipe");
-      abort ();
-    }
-    pid = fork ();
-    if (pid < 0) {
-      perror ("fork");
-      abort ();
-    }
-    if (0 != pid) { /* parent */
-  /*    int exitcode;
-      close (start_pipe[1]);
-      read (start_pipe[0], &exitcode, sizeof (exitcode));
-      LOG_I ("Server running.");
-      close (start_pipe[0]);
-      return exitcode;
-    }
-   
-    setsid (); /* XXX: Someday look for errors and abort horribly... */
-/*    close (start_pipe[0]);
-    struct sigaction sa;
-    sa.sa_flags = 0;
-    sigemptyset (&sa.sa_mask);
-    sa.sa_handler = SIG_IGN;
-    sigaction (SIGHUP, &sa, NULL); /* Paranoia, should no longer be attached to the tty */
-//  }*/
-
   /* allocate the graph */
   tic();
   struct stinger * S = stinger_shared_new_full(&graph_name, stinger_config);
 
   size_t graph_sz = S->length + sizeof(struct stinger);
   LOG_V_A("Data structure allocation time: %lf seconds", toc());
-
-  /* load edges from disk (if applicable) */
-/*  if (input_file[0] != '\0')
-  {
-    LOG_V("Reading...");
-    tic ();
-    switch (file_type[0])
-    {
-  
-      case 'c': {
-		  load_csv_graph (S, input_file, use_numerics);
-		} break;  /* CSV */
-
-  /*    case 'd': {
-		  load_dimacs_graph (S, input_file);
-		} break;  /* DIMACS */
-
-  /*    case 'm': {
-		  load_metisish_graph (S, input_file);
-		} break;
-
-      case 'g': {
-		} break;  /* GML / GraphML / GEXF -- you pick */
-
-   /*   case 'j': {
-		  load_json_graph (S, input_file);
-		} break;  /* JSON */
-
-  /*    case 'x': {
-		} break;  /* XML */
-
-  /*    case 'r': {
-		  uint64_t nv;
-		  stinger_open_from_file(input_file, S, &nv);
-		  save_to_disk = true;
-		} break;  /* restartable STINGER on disk */
-
-  /*    default:	{
-		  LOG_F("Unsupported file type.");
-		  exit(0);
-		} break;
-    }
-    LOG_V_A("Read time: %lf seconds", toc());
-  }*/
 
   xfree(stinger_config);
 
@@ -347,7 +135,6 @@ int main(int argc, char *argv[])
   /* this thread will handle the batch & alg servers */
   /* TODO: bring the thread creation for the alg server to this level */
   pthread_create(&batch_server_tid, NULL, start_batch_server, NULL);
-  pthread_create(&alg_server_tid, NULL, start_alg_handling, NULL);
 
   {
     /* Inform the parent that we're ready for connections. */
