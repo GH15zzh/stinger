@@ -19,17 +19,14 @@
 #define STINGER_MAX_BATCHES 100000
 
 typedef struct {
-  struct stinger * S;
   int sock;
 } handle_stream_args;
 
-void *
-handle_stream(void * args)
+void * handle_stream(void * args)
 {
   StingerServerState & server_state = StingerServerState::get_server_state();
 
   /* should be able to remove these */
-  struct stinger *S = ((handle_stream_args *) args)->S;
   int sock = ((handle_stream_args *) args)->sock;
   free(args);
 
@@ -57,7 +54,6 @@ handle_stream(void * args)
 
       if (server_state.get_queue_size() >= STINGER_MAX_BATCHES) {
 	      LOG_W("Dropping a batch");
-	      stinger_uint64_fetch_add(&(S->dropped_batches), 1);
 	      delete batch;
       	continue;
       }
@@ -80,12 +76,10 @@ handle_stream(void * args)
   return NULL;
 }
 
-void *
-start_batch_server (void * args)
+void * start_batch_server (void * args)
 {
   StingerServerState & server_state = StingerServerState::get_server_state();
 
-  struct stinger * S = server_state.get_stinger();
   int port_streams = server_state.get_port_streams();
 
   int sock_handle, newsockfd;
@@ -104,7 +98,6 @@ start_batch_server (void * args)
     }
 
     handle_stream_args * args = (handle_stream_args *)xcalloc(1, sizeof(handle_stream_args));
-    args->S = S;
     args->sock = newsockfd;
 
     pthread_create(&garbage_thread_handle, NULL, handle_stream, (void *)args);
