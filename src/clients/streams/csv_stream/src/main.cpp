@@ -9,7 +9,7 @@
 #include "stinger_utils/csv.h"
 #include "explore_csv.h"
 
-using namespace gt::stinger;
+//using namespace gt::stinger;
 
 #define E_A(X,...) fprintf(stderr, "%s %s %d:\n\t" #X "\n", __FILE__, __func__, __LINE__, __VA_ARGS__);
 #define E(X) E_A(X,NULL)
@@ -20,8 +20,7 @@ using namespace gt::stinger;
 #include "stinger_core/stinger_error.h"
 
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   /* global options */
   int port = 10102;
@@ -32,12 +31,8 @@ main(int argc, char *argv[])
   int use_directed = 0;
 
   int opt = 0;
-  while(-1 != (opt = getopt(argc, argv, "p:a:x:t:d"))) {
+  while(-1 != (opt = getopt(argc, argv, "a:x:t:d"))) {
     switch(opt) {
-      case 'p': {
-		  port = atoi(optarg);
-		} break;
-
       case 'x': {
 		    batch_size = atol(optarg);
 		    LOG_I_A("Batch size changed to %d", batch_size);
@@ -57,7 +52,7 @@ main(int argc, char *argv[])
       case '?':
       case 'h': {
 		  printf("Usage:    %s [-p port] [-a server_addr] [-t timeout] [-x batch_size] filename\n", argv[0]);
-		  printf("Defaults:\n\tport: %d\n\tserver: localhost\n\ttimeout:%lf\n\tbatch_size: %d", port, timeout, batch_size);
+		  printf("Defaults:\n\tserver: localhost\n\ttimeout:%lf\n\tbatch_size: %d", timeout, batch_size);
 		  exit(0);
 		} break;
     }
@@ -105,7 +100,7 @@ main(int argc, char *argv[])
   } else {
     batch.set_make_undirected(true);
   }
-  batch.set_type(MIXED);
+  batch.set_type(NUMBERS_ONLY);
   batch.set_keep_alive(true);
 
   tic(); 
@@ -136,7 +131,7 @@ main(int argc, char *argv[])
 
   int64_t total_actions = batch.insertions_size() + batch.deletions_size();
   if(total_actions) {
-    LOG_I_A("Sending a batch of %ld actions", total_actions);
+    LOG_I_A("what?Sending a batch of %ld actions", total_actions);
     send_message(sock_handle, batch);
   }
 
