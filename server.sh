@@ -1,0 +1,1 @@
+./bin/stinger_server
